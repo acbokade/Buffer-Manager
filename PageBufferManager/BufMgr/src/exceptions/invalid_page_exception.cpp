@@ -10,18 +10,20 @@
 #include <sstream>
 #include <string>
 
-namespace badgerdb {
+namespace badgerdb
+{
 
-InvalidPageException::InvalidPageException(
-    const PageId requested_number, const std::string& file)
-    : BadgerDbException(""),
-      page_number_(requested_number),
-      filename_(file) {
-  std::stringstream ss;
-  ss << "Request made for an invalid page."
-     << " Requested page " << page_number_
-     << " from file '" << filename_ << "'";
-  message_.assign(ss.str());
-}
+  InvalidPageException::InvalidPageException(
+      const PageId requested_number, const std::string &file)
+      : BadgerDbException(""),
+        page_number_(requested_number),
+        filename_(file)
+  {
+    std::stringstream ss;
+    ss << "Request made for an invalid page."
+       << " Requested page " << page_number_
+       << " from file '" << filename_ << "'";
+    message_.assign(ss.str());
+  }
 
 }

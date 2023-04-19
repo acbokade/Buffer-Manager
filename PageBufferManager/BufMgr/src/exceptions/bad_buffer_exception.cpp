@@ -10,13 +10,15 @@
 #include <sstream>
 #include <string>
 
-namespace badgerdb {
+namespace badgerdb
+{
 
-BadBufferException::BadBufferException(FrameId frameNoIn, bool dirtyIn, bool validIn, bool refbitIn)
-    : BadgerDbException(""), frameNo(frameNoIn), dirty(dirtyIn), valid(validIn), refbit(refbitIn) {
-  std::stringstream ss;
-  ss << "This buffer is bad: " << frameNo;
-  message_.assign(ss.str());
-}
+  BadBufferException::BadBufferException(FrameId frameNoIn, bool dirtyIn, bool validIn, bool refbitIn)
+      : BadgerDbException(""), frameNo(frameNoIn), dirty(dirtyIn), valid(validIn), refbit(refbitIn)
+  {
+    std::stringstream ss;
+    ss << "This buffer is bad: " << frameNo;
+    message_.assign(ss.str());
+  }
 
 }

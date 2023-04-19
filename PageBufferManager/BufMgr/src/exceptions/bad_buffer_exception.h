@@ -12,38 +12,40 @@
 #include "badgerdb_exception.h"
 #include "types.h"
 
-namespace badgerdb {
-
-/**
- * @brief An exception that is thrown when a buffer is found whose valid is false but other variables in BufDesc are assigned valid values
- */
-class BadBufferException : public BadgerDbException {
- public:
-  /**
-   * Constructs a bad buffer exception for the given file.
-   */
-  explicit BadBufferException(FrameId frameNoIn, bool dirtyIn, bool validIn, bool refbitIn);
-
- protected:
-  /**
-   * Frame number of bad buffer
-   */
-	FrameId frameNo;
+namespace badgerdb
+{
 
 	/**
-	 * True if buffer is dirty;  false otherwise
+	 * @brief An exception that is thrown when a buffer is found whose valid is false but other variables in BufDesc are assigned valid values
 	 */
-	bool dirty;
+	class BadBufferException : public BadgerDbException
+	{
+	public:
+		/**
+		 * Constructs a bad buffer exception for the given file.
+		 */
+		explicit BadBufferException(FrameId frameNoIn, bool dirtyIn, bool validIn, bool refbitIn);
 
-	/**
-	 * True if buffer is valid
-	 */
-	bool valid;
+	protected:
+		/**
+		 * Frame number of bad buffer
+		 */
+		FrameId frameNo;
 
-	/**
-	 * Has this buffer frame been reference recently
-	 */
-	bool refbit;
-};
+		/**
+		 * True if buffer is dirty;  false otherwise
+		 */
+		bool dirty;
+
+		/**
+		 * True if buffer is valid
+		 */
+		bool valid;
+
+		/**
+		 * Has this buffer frame been reference recently
+		 */
+		bool refbit;
+	};
 
 }

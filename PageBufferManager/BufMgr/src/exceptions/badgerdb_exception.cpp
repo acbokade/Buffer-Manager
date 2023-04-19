@@ -7,10 +7,12 @@
 
 #include "badgerdb_exception.h"
 
-namespace badgerdb {
+namespace badgerdb
+{
 
-BadgerDbException::BadgerDbException(const std::string& msg)
-    : message_(msg) {
-}
+    BadgerDbException::BadgerDbException(const std::string &msg)
+        : message_(msg)
+    {
+    }
 
 }

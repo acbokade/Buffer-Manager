@@ -10,17 +10,19 @@
 #include <sstream>
 #include <string>
 
-namespace badgerdb {
+namespace badgerdb
+{
 
-SlotInUseException::SlotInUseException(const PageId page_num,
-                                       const SlotId slot_num)
-    : BadgerDbException(""),
-      page_number_(page_num),
-      slot_number_(slot_num) {
-  std::stringstream ss;
-  ss << "Attempt to insert data to a slot that is currently in use."
-     << " Page: " << page_number_ << " Slot: " << slot_number_;
-  message_.assign(ss.str());
-}
+  SlotInUseException::SlotInUseException(const PageId page_num,
+                                         const SlotId slot_num)
+      : BadgerDbException(""),
+        page_number_(page_num),
+        slot_number_(slot_num)
+  {
+    std::stringstream ss;
+    ss << "Attempt to insert data to a slot that is currently in use."
+       << " Page: " << page_number_ << " Slot: " << slot_number_;
+    message_.assign(ss.str());
+  }
 
 }

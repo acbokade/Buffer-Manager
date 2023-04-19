@@ -11,17 +11,19 @@
 
 #include "badgerdb_exception.h"
 
-namespace badgerdb {
+namespace badgerdb
+{
 
-/**
- * @brief An exception that is thrown when some unexpected error occurs in the hash table.
- */
-class HashTableException : public BadgerDbException {
- public:
   /**
-   * Constructs a hash table exception.
+   * @brief An exception that is thrown when some unexpected error occurs in the hash table.
    */
-  explicit HashTableException();
-};
+  class HashTableException : public BadgerDbException
+  {
+  public:
+    /**
+     * Constructs a hash table exception.
+     */
+    explicit HashTableException();
+  };
 
 }

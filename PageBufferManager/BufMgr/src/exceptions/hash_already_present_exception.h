@@ -12,33 +12,35 @@
 #include "badgerdb_exception.h"
 #include "types.h"
 
-namespace badgerdb {
-
-/**
- * @brief An exception that is thrown when a new entry to be inserted in the hash table is already present in it.
- */
-class HashAlreadyPresentException : public BadgerDbException {
- public:
-  /**
-   * Constructs a hash already present exception for the given file.
-   */
-  explicit HashAlreadyPresentException(const std::string& nameIn, PageId pageNoIn, FrameId frameNoIn);
-
- protected:
-  /**
-   * Name of file that caused this exception.
-   */
-  const std::string& name;
+namespace badgerdb
+{
 
   /**
-   * Page number in file
+   * @brief An exception that is thrown when a new entry to be inserted in the hash table is already present in it.
    */
-  const PageId pageNo;
+  class HashAlreadyPresentException : public BadgerDbException
+  {
+  public:
+    /**
+     * Constructs a hash already present exception for the given file.
+     */
+    explicit HashAlreadyPresentException(const std::string &nameIn, PageId pageNoIn, FrameId frameNoIn);
 
-  /**
-   * Frame number in buffer pool
-   */
-  const FrameId frameNo;
-};
+  protected:
+    /**
+     * Name of file that caused this exception.
+     */
+    const std::string &name;
+
+    /**
+     * Page number in file
+     */
+    const PageId pageNo;
+
+    /**
+     * Frame number in buffer pool
+     */
+    const FrameId frameNo;
+  };
 
 }

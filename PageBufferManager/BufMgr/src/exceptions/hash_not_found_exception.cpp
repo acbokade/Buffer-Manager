@@ -10,13 +10,15 @@
 #include <sstream>
 #include <string>
 
-namespace badgerdb {
+namespace badgerdb
+{
 
-HashNotFoundException::HashNotFoundException(const std::string& nameIn, PageId pageNoIn)
-    : BadgerDbException(""), name(nameIn), pageNo(pageNoIn) {
-  std::stringstream ss;
-  ss << "The hash value is not present in the hash table for file: " << name << "page: " << pageNo;
-  message_.assign(ss.str());
-}
+  HashNotFoundException::HashNotFoundException(const std::string &nameIn, PageId pageNoIn)
+      : BadgerDbException(""), name(nameIn), pageNo(pageNoIn)
+  {
+    std::stringstream ss;
+    ss << "The hash value is not present in the hash table for file: " << name << "page: " << pageNo;
+    message_.assign(ss.str());
+  }
 
 }

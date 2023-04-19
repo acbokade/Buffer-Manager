@@ -10,13 +10,15 @@
 #include <sstream>
 #include <string>
 
-namespace badgerdb {
+namespace badgerdb
+{
 
-BufferExceededException::BufferExceededException()
-    : BadgerDbException(""){
-  std::stringstream ss;
-  ss << "Exceeded the buffer pool capacity";
-  message_.assign(ss.str());
-}
+  BufferExceededException::BufferExceededException()
+      : BadgerDbException("")
+  {
+    std::stringstream ss;
+    ss << "Exceeded the buffer pool capacity";
+    message_.assign(ss.str());
+  }
 
 }

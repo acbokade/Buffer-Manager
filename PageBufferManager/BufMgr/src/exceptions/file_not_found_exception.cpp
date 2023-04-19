@@ -10,13 +10,15 @@
 #include <sstream>
 #include <string>
 
-namespace badgerdb {
+namespace badgerdb
+{
 
-FileNotFoundException::FileNotFoundException(const std::string& name)
-    : BadgerDbException(""), filename_(name) {
-  std::stringstream ss;
-  ss << "File not found: " << filename_;
-  message_.assign(ss.str());
-}
+  FileNotFoundException::FileNotFoundException(const std::string &name)
+      : BadgerDbException(""), filename_(name)
+  {
+    std::stringstream ss;
+    ss << "File not found: " << filename_;
+    message_.assign(ss.str());
+  }
 
 }

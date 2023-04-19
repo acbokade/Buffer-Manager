@@ -10,13 +10,15 @@
 #include <sstream>
 #include <string>
 
-namespace badgerdb {
+namespace badgerdb
+{
 
-PagePinnedException::PagePinnedException(const std::string& nameIn, PageId pageNoIn, FrameId frameNoIn)
-    : BadgerDbException(""), name(nameIn), pageNo(pageNoIn), frameNo(frameNoIn) {
-  std::stringstream ss;
-  ss << "This page is already pinned. file:  " << name << "page: " << pageNo << "frame: " << frameNo;
-  message_.assign(ss.str());
-}
+  PagePinnedException::PagePinnedException(const std::string &nameIn, PageId pageNoIn, FrameId frameNoIn)
+      : BadgerDbException(""), name(nameIn), pageNo(pageNoIn), frameNo(frameNoIn)
+  {
+    std::stringstream ss;
+    ss << "This page is already pinned. file:  " << name << "page: " << pageNo << "frame: " << frameNo;
+    message_.assign(ss.str());
+  }
 
 }

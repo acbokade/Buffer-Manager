@@ -10,13 +10,15 @@
 #include <sstream>
 #include <string>
 
-namespace badgerdb {
+namespace badgerdb
+{
 
-FileExistsException::FileExistsException(const std::string& name)
-    : BadgerDbException(""), filename_(name) {
-  std::stringstream ss;
-  ss << "File already exists: " << filename_;
-  message_.assign(ss.str());
-}
+  FileExistsException::FileExistsException(const std::string &name)
+      : BadgerDbException(""), filename_(name)
+  {
+    std::stringstream ss;
+    ss << "File already exists: " << filename_;
+    message_.assign(ss.str());
+  }
 
 }
