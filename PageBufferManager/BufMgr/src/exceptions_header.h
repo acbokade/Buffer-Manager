@@ -1,0 +1,5 @@
+#include "exceptions/buffer_exceeded_exception.h"
+#include "exceptions/page_not_pinned_exception.h"
+#include "exceptions/page_pinned_exception.h"
+#include "exceptions/bad_buffer_exception.h"
+#include "exceptions/hash_not_found_exception.h"
