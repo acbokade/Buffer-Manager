@@ -53,6 +53,7 @@ int main()
 	}
 
 	{
+		std::cout<<"Main started"<<std::endl;
 		// Create a new database file.
 		File new_file = File::create(filename);
 
@@ -60,6 +61,7 @@ int main()
 		PageId third_page_number;
 		for (int i = 0; i < 5; ++i)
 		{
+			std::cout<<"Inserting record "<<i<<std::endl;
 			Page new_page = new_file.allocatePage();
 			if (i == 3)
 			{
@@ -71,6 +73,7 @@ int main()
 			// Write the page back to the file (with the new data).
 			new_file.writePage(new_page);
 		}
+		std::cout<<"Inserted records"<<std::endl;
 
 		// Iterate through all pages in the file.
 		for (FileIterator iter = new_file.begin();
@@ -86,6 +89,7 @@ int main()
 						  << " on page " << (*iter).page_number() << "\n";
 			}
 		}
+		std::cout<<"Iterated through all pages"<<std::endl;
 
 		// Retrieve the third page and add another record to it.
 		Page third_page = new_file.readPage(third_page_number);
@@ -145,11 +149,11 @@ void testBufMgr()
 	// Comment tests which you do not wish to run now. Tests are dependent on their preceding tests. So, they have to be run in the following order.
 	// Commenting  a particular test requires commenting all tests that follow it else those tests would fail.
 	test1();
-	test2();
-	test3();
-	test4();
-	test5();
-	test6();
+	// test2();
+	// test3();
+	// test4();
+	// test5();
+	// test6();
 
 	// Close files before deleting them
 	file1.~File();
@@ -174,6 +178,7 @@ void testBufMgr()
 
 void test1()
 {
+	std::cout<<"test1 started"<<std::endl;
 	// Allocating pages in a file...
 	for (i = 0; i < num; i++)
 	{
@@ -209,7 +214,7 @@ void test2()
 		sprintf((char *)tmpbuf, "test.2 Page %d %7.1f", pageno2, (float)pageno2);
 		rid2 = page2->insertRecord(tmpbuf);
 
-		int index = random() % num;
+		int index = rand() % num;
 		pageno1 = pid[index];
 		bufMgr->readPage(file1ptr, pageno1, page);
 		sprintf((char *)tmpbuf, "test.1 Page %d %7.1f", pageno1, (float)pageno1);

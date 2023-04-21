@@ -13,7 +13,7 @@ export PATH
 
 all:
 	cd src;\
-	g++ -std=c++0x *.cpp exceptions/*.cpp -I. -Wall -o badgerdb_main
+	g++ -std=c++0x *.cpp exceptions/*.cpp -I. -Wall -fpermissive -o badgerdb_main
 
 clean:
 	cd src;\
