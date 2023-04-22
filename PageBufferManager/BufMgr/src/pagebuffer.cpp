@@ -34,15 +34,16 @@ namespace badgerdb
 	PageBufferManager::~PageBufferManager()
 	{
 		// BEGINNING of your solution -- do not remove this comment
-		// Flush out all dirty pages
 		for (FrameId i = 0; i < numBufs; i++)
 		{
+			// Flush out all dirty pages
 			if (bufferStatTable[i].dirty)
 			{
 				File *file = bufferStatTable[i].file;
 				file->writePage(pageBufferPool[i]);
 			}
 		}
+		// Reclaim the heap memory
 		delete[] bufferStatTable;
 		delete[] pageBufferPool;
 		delete hashTable;
@@ -79,8 +80,8 @@ namespace badgerdb
 		page = &pageBufferPool[frameNo];
 		*page = file->allocatePage();
 		pageNumber = page->page_number();
-		hashTable->insert(file, pageNumber, frameNo);
 		bufferStatTable[frameNo].Set(file, pageNumber);
+		hashTable->insert(file, pageNumber, frameNo);
 		// END of your solution -- do not remove this comment
 	}
 
@@ -144,6 +145,7 @@ namespace badgerdb
 			{
 				// allocated this frame
 				frame = clockHand;
+				bufferStatTable[clockHand].Clear();
 				return;
 			}
 			else if (bufferStatTable[clockHand].pinCnt > 0)
@@ -171,6 +173,7 @@ namespace badgerdb
 					PageId pageNo = bufferStatTable[clockHand].pageNo;
 					hashTable->remove(file, pageNo);
 				}
+				bufferStatTable[clockHand].Clear();
 				frame = clockHand;
 				return;
 			}
