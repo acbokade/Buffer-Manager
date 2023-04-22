@@ -80,14 +80,17 @@ int main()
 			 iter != new_file.end();
 			 ++iter)
 		{
+			std::cout<<"a"<<std::endl;
 			// Iterate through all records on the page.
 			for (PageIterator page_iter = (*iter).begin();
 				 page_iter != (*iter).end();
 				 ++page_iter)
 			{
+				std::cout<<"b"<<"!"<<*page_iter<<"@"<<(*iter).page_number()<<std::endl;
 				std::cout << "Found record: " << *page_iter
 						  << " on page " << (*iter).page_number() << "\n";
 			}
+			std::cout<<"c"<<std::endl;
 		}
 		std::cout<<"Iterated through all pages"<<std::endl;
 

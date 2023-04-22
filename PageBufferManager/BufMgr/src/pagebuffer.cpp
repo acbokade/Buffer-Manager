@@ -35,6 +35,7 @@ namespace badgerdb
 	{
 		// BEGINNING of your solution -- do not remove this comment
 		// Flush out all dirty pages
+		std::cout << "Destructor of PageBufferManager called" << std::endl;
 		for (FrameId i = 0; i < numBufs; i++)
 		{
 			if (bufferStatTable[i].dirty)
@@ -62,7 +63,7 @@ namespace badgerdb
 		catch (HashNotFoundException hashNotFoundException)
 		{
 			allocateBuffer(frameNo);
-			*page = bufferStatTable[frameNo].file->readPage(pageNumber);
+			*page = file->readPage(pageNumber);
 			hashTable->insert(file, pageNumber, frameNo);
 			bufferStatTable[pageNumber].Set(file, pageNumber);
 			// TODO: What about copying the page to pageBufferPool
@@ -91,7 +92,7 @@ namespace badgerdb
 			hashTable->lookup(file, pageNumber, frameNo);
 			if (bufferStatTable[frameNo].pinCnt == 0)
 			{
-				throw new PageNotPinnedException("pagebuffer.cpp", pageNumber, bufferStatTable[pageNumber].frameNo);
+				throw new PageNotPinnedException(__FILE__, pageNumber, bufferStatTable[pageNumber].frameNo);
 			}
 			bufferStatTable[frameNo].pinCnt -= 1;
 			if (dirty)
@@ -101,6 +102,7 @@ namespace badgerdb
 		}
 		catch (HashNotFoundException hashNotFoundException)
 		{
+			throw new HashNotFoundException(__FILE__, pageNumber);
 		}
 		// END of your solution -- do not remove this comment
 	}
@@ -115,10 +117,12 @@ namespace badgerdb
 			delete &bufferStatTable[frameNo];
 			hashTable->remove(file, pageNumber);
 			// TODO: free pageBufferPool
+			// pageBufferPool[frameNo] = nullptr;
 			file->deletePage(pageNumber);
 		}
 		catch (HashNotFoundException hashNotFoundException)
 		{
+			throw new HashNotFoundException(__FILE__, pageNumber);
 		}
 		// END of your solution -- do not remove this comment
 	}
@@ -154,17 +158,14 @@ namespace badgerdb
 						File *file = bufferStatTable[i].file;
 						flushFile(file);
 					}
-					else
+					// Check if the frame has valid page in the hash table
+					if (pageBufferPool[i].page_number() != Page::INVALID_NUMBER)
 					{
-						// Check if the frame has valid page in the hash table
-						if (pageBufferPool[i].page_number() != Page::INVALID_NUMBER)
-						{
-							File *file = bufferStatTable[i].file;
-							PageId pageNo = bufferStatTable[i].pageNo;
-							hashTable->remove(file, pageNo);
-						}
-						frame = i;
+						File *file = bufferStatTable[i].file;
+						PageId pageNo = bufferStatTable[i].pageNo;
+						hashTable->remove(file, pageNo);
 					}
+					frame = i;
 				}
 			}
 		}
@@ -185,7 +186,7 @@ namespace badgerdb
 				hashTable->lookup(file, pageNo, frameNo);
 				if (bufferStatTable[frameNo].pinCnt > 0)
 				{
-					throw new PagePinnedException("pagebuffer.cpp", pageNo, frameNo);
+					throw new PagePinnedException(__FILE__, pageNo, frameNo);
 				}
 				if (!bufferStatTable[frameNo].valid)
 				{
