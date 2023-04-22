@@ -35,7 +35,6 @@ namespace badgerdb
 	{
 		// BEGINNING of your solution -- do not remove this comment
 		// Flush out all dirty pages
-		std::cout << "Destructor of PageBufferManager called" << std::endl;
 		for (FrameId i = 0; i < numBufs; i++)
 		{
 			if (bufferStatTable[i].dirty)
@@ -46,6 +45,7 @@ namespace badgerdb
 		}
 		delete[] bufferStatTable;
 		delete[] pageBufferPool;
+		delete hashTable;
 		// END of your solution -- do not remove this comment
 	}
 
@@ -58,16 +58,15 @@ namespace badgerdb
 			hashTable->lookup(file, pageNumber, frameNo);
 			bufferStatTable[frameNo].refbit = true;
 			bufferStatTable[frameNo].pinCnt += 1;
-			*page = pageBufferPool[frameNo];
+			page = &pageBufferPool[frameNo];
 		}
 		catch (HashNotFoundException hashNotFoundException)
 		{
 			allocateBuffer(frameNo);
-			*page = file->readPage(pageNumber);
+			pageBufferPool[frameNo] = file->readPage(pageNumber);
+			page = &pageBufferPool[frameNo];
 			hashTable->insert(file, pageNumber, frameNo);
-			bufferStatTable[pageNumber].Set(file, pageNumber);
-			// TODO: What about copying the page to pageBufferPool
-			pageBufferPool[frameNo] = *page;
+			bufferStatTable[frameNo].Set(file, pageNumber);
 		}
 		// END of your solution -- do not remove this comment
 	}
@@ -75,9 +74,11 @@ namespace badgerdb
 	void PageBufferManager::allocatePage(File *file, PageId &pageNumber, Page *&page)
 	{
 		// BEGINNING of your solution -- do not remove this comment
-		*page = file->allocatePage();
 		FrameId frameNo;
 		allocateBuffer(frameNo);
+		page = &pageBufferPool[frameNo];
+		*page = file->allocatePage();
+		pageNumber = page->page_number();
 		hashTable->insert(file, pageNumber, frameNo);
 		bufferStatTable[frameNo].Set(file, pageNumber);
 		// END of your solution -- do not remove this comment
@@ -92,7 +93,7 @@ namespace badgerdb
 			hashTable->lookup(file, pageNumber, frameNo);
 			if (bufferStatTable[frameNo].pinCnt == 0)
 			{
-				throw new PageNotPinnedException(__FILE__, pageNumber, bufferStatTable[pageNumber].frameNo);
+				throw PageNotPinnedException(file->filename(), pageNumber, frameNo);
 			}
 			bufferStatTable[frameNo].pinCnt -= 1;
 			if (dirty)
@@ -102,7 +103,7 @@ namespace badgerdb
 		}
 		catch (HashNotFoundException hashNotFoundException)
 		{
-			throw new HashNotFoundException(__FILE__, pageNumber);
+			throw HashNotFoundException(file->filename(), pageNumber);
 		}
 		// END of your solution -- do not remove this comment
 	}
@@ -114,15 +115,13 @@ namespace badgerdb
 		try
 		{
 			hashTable->lookup(file, pageNumber, frameNo);
-			delete &bufferStatTable[frameNo];
+			bufferStatTable[frameNo].Clear();
 			hashTable->remove(file, pageNumber);
-			// TODO: free pageBufferPool
-			// pageBufferPool[frameNo] = nullptr;
 			file->deletePage(pageNumber);
 		}
 		catch (HashNotFoundException hashNotFoundException)
 		{
-			throw new HashNotFoundException(__FILE__, pageNumber);
+			throw HashNotFoundException(file->filename(), pageNumber);
 		}
 		// END of your solution -- do not remove this comment
 	}
@@ -137,71 +136,80 @@ namespace badgerdb
 	void PageBufferManager::allocateBuffer(FrameId &frame)
 	{
 		// BEGINNING of your solution -- do not remove this comment
-		for (FrameId i = 0; i < numBufs; i++)
+		uint32_t nPinnedPages = 0;
+		while (true)
 		{
-			if (bufferStatTable[i].pinCnt > 0)
+			// For the first time, allocating buffer when isValid is false
+			if (!bufferStatTable[clockHand].valid)
 			{
+				// allocated this frame
+				frame = clockHand;
+				return;
+			}
+			else if (bufferStatTable[clockHand].pinCnt > 0)
+			{
+				nPinnedPages += 1;
+				advanceClock();
+			}
+			else if (bufferStatTable[clockHand].refbit)
+			{
+				bufferStatTable[clockHand].refbit = false;
 				advanceClock();
 			}
 			else
 			{
-				if (bufferStatTable[i].refbit)
+				if (bufferStatTable[clockHand].dirty)
 				{
-					bufferStatTable[i].refbit = false;
-					advanceClock();
+					// write to disk
+					File *file = bufferStatTable[clockHand].file;
+					file->writePage(pageBufferPool[clockHand]);
 				}
-				else
+				// Check if the frame has valid page in the hash table
+				if (bufferStatTable[clockHand].valid)
 				{
-					if (bufferStatTable[i].dirty)
-					{
-						// write to disk
-						File *file = bufferStatTable[i].file;
-						flushFile(file);
-					}
-					// Check if the frame has valid page in the hash table
-					if (pageBufferPool[i].page_number() != Page::INVALID_NUMBER)
-					{
-						File *file = bufferStatTable[i].file;
-						PageId pageNo = bufferStatTable[i].pageNo;
-						hashTable->remove(file, pageNo);
-					}
-					frame = i;
+					File *file = bufferStatTable[clockHand].file;
+					PageId pageNo = bufferStatTable[clockHand].pageNo;
+					hashTable->remove(file, pageNo);
 				}
+				frame = clockHand;
+				return;
+			}
+			if (nPinnedPages == numBufs)
+			{
+				throw BufferExceededException();
 			}
 		}
-		throw new BufferExceededException();
 		// END of your solution -- do not remove this comment
 	}
 
 	void PageBufferManager::flushFile(const File *file)
 	{
+		File file_copy = *file;
 		// BEGINNING of your solution -- do not remove this comment
-		for (FileIterator iter = file->begin();
-			 iter != file->end();
+		for (FileIterator iter = file_copy.begin();
+			 iter != file_copy.end();
 			 ++iter)
 		{
+			PageId pageNo = (*iter).page_number();
+			FrameId frameNo;
+			hashTable->lookup(file, pageNo, frameNo);
+			if (bufferStatTable[frameNo].pinCnt > 0)
 			{
-				PageId pageNo = (*iter).page_number();
-				FrameId frameNo;
-				hashTable->lookup(file, pageNo, frameNo);
-				if (bufferStatTable[frameNo].pinCnt > 0)
-				{
-					throw new PagePinnedException(__FILE__, pageNo, frameNo);
-				}
-				if (!bufferStatTable[frameNo].valid)
-				{
-					throw new BadBufferException(frameNo, bufferStatTable[frameNo].dirty, bufferStatTable[frameNo].valid, bufferStatTable[frameNo].refbit);
-				}
-				if (bufferStatTable[frameNo].dirty)
-				{
-					file->writePage(pageBufferPool[frameNo]);
-					bufferStatTable[frameNo].dirty = false;
-				}
-				hashTable->remove(file, pageNo);
-				bufferStatTable[frameNo].Clear();
+				throw PagePinnedException(file_copy.filename(), pageNo, frameNo);
 			}
-			// END of your solution -- do not remove this comment
+			if (!bufferStatTable[frameNo].valid)
+			{
+				throw BadBufferException(frameNo, bufferStatTable[frameNo].dirty, bufferStatTable[frameNo].valid, bufferStatTable[frameNo].refbit);
+			}
+			if (bufferStatTable[frameNo].dirty)
+			{
+				bufferStatTable[frameNo].file->writePage(pageBufferPool[frameNo]);
+				bufferStatTable[frameNo].dirty = false;
+			}
+			hashTable->remove(file, pageNo);
+			bufferStatTable[frameNo].Clear();
 		}
+		// END of your solution -- do not remove this comment
 	}
 
 	void PageBufferManager::printSelf(void)

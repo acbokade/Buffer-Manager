@@ -80,13 +80,11 @@ int main()
 			 iter != new_file.end();
 			 ++iter)
 		{
-			std::cout<<"a"<<std::endl;
 			// Iterate through all records on the page.
 			for (PageIterator page_iter = (*iter).begin();
 				 page_iter != (*iter).end();
 				 ++page_iter)
 			{
-				std::cout<<"b"<<"!"<<*page_iter<<"@"<<(*iter).page_number()<<std::endl;
 				std::cout << "Found record: " << *page_iter
 						  << " on page " << (*iter).page_number() << "\n";
 			}
@@ -152,11 +150,11 @@ void testBufMgr()
 	// Comment tests which you do not wish to run now. Tests are dependent on their preceding tests. So, they have to be run in the following order.
 	// Commenting  a particular test requires commenting all tests that follow it else those tests would fail.
 	test1();
-	// test2();
-	// test3();
-	// test4();
-	// test5();
-	// test6();
+	test2();
+	test3();
+	test4();
+	test5();
+	test6();
 
 	// Close files before deleting them
 	file1.~File();
@@ -190,6 +188,7 @@ void test1()
 		rid[i] = page->insertRecord(tmpbuf);
 		bufMgr->unPinPage(file1ptr, pid[i], true);
 	}
+	std::cout<<"done allocating pages"<<std::endl;
 
 	// Reading pages back...
 	for (i = 0; i < num; i++)
@@ -217,7 +216,7 @@ void test2()
 		sprintf((char *)tmpbuf, "test.2 Page %d %7.1f", pageno2, (float)pageno2);
 		rid2 = page2->insertRecord(tmpbuf);
 
-		int index = rand() % num;
+		int index = random() % num;
 		pageno1 = pid[index];
 		bufMgr->readPage(file1ptr, pageno1, page);
 		sprintf((char *)tmpbuf, "test.1 Page %d %7.1f", pageno1, (float)pageno1);

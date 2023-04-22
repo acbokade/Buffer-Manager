@@ -197,7 +197,7 @@ namespace badgerdb
      *
      * @return  Page number.
      */
-    PageId page_number() const { std::cout<<"ok"<<std::endl;return header_.current_page_number; }
+    PageId page_number() const { return header_.current_page_number; }
 
     /**
      * Returns the number of the next used page this page in its file.
