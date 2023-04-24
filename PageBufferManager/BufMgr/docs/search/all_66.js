@@ -15,7 +15,7 @@ var searchData=
   ['fileopenexception',['FileOpenException',['../classbadgerdb_1_1_file_open_exception.html',1,'badgerdb']]],
   ['first_5ffree_5fpage',['first_free_page',['../structbadgerdb_1_1_file_header.html#aa86917d8554a42318c795471f32ad006',1,'badgerdb::FileHeader']]],
   ['first_5fused_5fpage',['first_used_page',['../structbadgerdb_1_1_file_header.html#ad006b5b9d02b8c20e7ad5226680779c6',1,'badgerdb::FileHeader']]],
-  ['flushfile',['flushFile',['../classbadgerdb_1_1_buf_mgr.html#acc61d1985720411ebb76e70f702827d3',1,'badgerdb::BufMgr']]],
+  ['flushfile',['flushFile',['../classbadgerdb_1_1_page_buffer_manager.html#a04c157d75d5b53159c9614a69570ca2c',1,'badgerdb::PageBufferManager']]],
   ['frameid',['FrameId',['../namespacebadgerdb.html#a1e7378fbefaea050a47e6cde929e9c01',1,'badgerdb']]],
   ['frameno',['frameNo',['../structbadgerdb_1_1hash_bucket.html#ab1b34471afe07b208150c805ac83b0b6',1,'badgerdb::hashBucket::frameNo()'],['../classbadgerdb_1_1_bad_buffer_exception.html#a25d41fd6ba9a3832fa36b73c12bca154',1,'badgerdb::BadBufferException::frameNo()'],['../classbadgerdb_1_1_hash_already_present_exception.html#a083e709e88ded6eee8325437822bda0e',1,'badgerdb::HashAlreadyPresentException::frameNo()'],['../classbadgerdb_1_1_page_not_pinned_exception.html#aafd3b7d0fd500a5b16114ddbba48f27e',1,'badgerdb::PageNotPinnedException::frameNo()'],['../classbadgerdb_1_1_page_pinned_exception.html#a2f5a90b4441f0cc62079a5192bbf01a6',1,'badgerdb::PagePinnedException::frameNo()']]],
   ['free_5fspace_5flower_5fbound',['free_space_lower_bound',['../structbadgerdb_1_1_page_header.html#ac71c5a9b3b8644da0ea827f5bd4c5742',1,'badgerdb::PageHeader']]],
