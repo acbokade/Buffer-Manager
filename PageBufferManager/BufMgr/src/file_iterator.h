@@ -113,6 +113,7 @@ namespace badgerdb
       return file_->readPage(current_page_number_);
     }
     PageId current_page_number_;
+
   private:
     /**
      * File we're iterating over.
@@ -122,7 +123,6 @@ namespace badgerdb
     /**
      * Number of page in file iterator is currently pointing to.
      */
-    
   };
 
 }

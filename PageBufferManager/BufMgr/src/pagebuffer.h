@@ -285,6 +285,11 @@ namespace badgerdb
 		{
 			bufStats.clear();
 		}
+
+		/**
+		 * Counts the number of dirty pages in the buffer pool. Used for testing methods
+		 */
+		int countDirtyPages();
 	};
 
 }
