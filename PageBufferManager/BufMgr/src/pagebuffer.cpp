@@ -1,5 +1,5 @@
 /**
- * @author Additional information regarding authorship and licensing are available in Supplementary.txt
+ * @author Ajinkya Bokade (A59019743) and Shanay Shah (A59010837)
  **/
 
 #include <iostream>
@@ -203,21 +203,21 @@ namespace badgerdb
 	void PageBufferManager::flushFile(const File *file)
 	{
 		// BEGINNING of your solution -- do not remove this comment
-		// Create a non-const file copy for iteration
-		// since the parameter passed to method is const
-		File file_copy = *file;
 		// Iterate through all the pages of the file
-		for (FileIterator iter = file_copy.begin();
-			 iter != file_copy.end();
-			 ++iter)
+		for (FrameId i = 0; i < numBufs; i++)
 		{
-			PageId pageNo = (*iter).page_number();
-			FrameId frameNo;
-			hashTable->lookup(file, pageNo, frameNo);
+			FrameId frameNo = i;
+			// If the page doesn't belong to the file, continue
+			if (bufferStatTable[frameNo].file != file)
+			{
+				continue;
+			}
+			PageId pageNo = bufferStatTable[frameNo].pageNo;
 			if (bufferStatTable[frameNo].pinCnt > 0)
 			{
+				File* file_ptr = bufferStatTable[frameNo].file;
 				// Throw page pinned exception if the page is pinned
-				throw PagePinnedException(file_copy.filename(), pageNo, frameNo);
+				throw PagePinnedException(file_ptr->filename(), pageNo, frameNo);
 			}
 			if (!bufferStatTable[frameNo].valid)
 			{

@@ -1,5 +1,5 @@
 /**
- * @author See Contributors.txt for code contributors and overview of BadgerDB.
+ * @author Ajinkya Bokade (A59019743) and Shanay Shah (A59010837)
  *
  * @section LICENSE
  * Copyright (c) 2012 Database Group, Computer Sciences Department, University of Wisconsin-Madison.

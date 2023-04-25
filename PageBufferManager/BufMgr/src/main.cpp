@@ -400,30 +400,14 @@ void test7()
 		rid[i] = page7->insertRecord(tmpbuf);
 		bufMgr->unPinPage(file7ptr, pid[i], true);
 	}
-
+	// Flush the file
 	bufMgr->flushFile(file7ptr);
 
 	// Reading pages back...
 	for (i = 0; i < num; i++)
 	{
-		// try
-		// {
-		// 	bufMgr->readPage(file7ptr, pid[i], page7);
-		// 	PRINT_ERROR("ERROR :: Pages for file are already flushed. Exception should have been thrown before execution reaches this point.");
-		// }
-		// catch (HashNotFoundException e)
-		// {
-		// }
-		try
-		{
-			bufMgr->readPage(file7ptr, pid[i], page7);
-			bufMgr->unPinPage(file7ptr, pid[i], true);
-		}
-		catch (...)
-		{
-			std::cout << "ok" << std::endl;
-			bufMgr->flushFile(file7ptr);
-		}
+		bufMgr->readPage(file7ptr, pid[i], page7);
+		bufMgr->unPinPage(file7ptr, pid[i], true);
 	}
 	bufMgr->flushFile(file7ptr);
 	std::cout << "Test 7 passed"
@@ -468,7 +452,7 @@ void test9()
 		rid[i] = page9->insertRecord(tmpbuf);
 		bufMgr->unPinPage(file9ptr, pid[i], true);
 	}
-
+	// Disposing all the pages
 	for (i = 0; i < num; i++)
 	{
 		bufMgr->disposePage(file9ptr, pid[i]);
@@ -492,6 +476,28 @@ void test9()
 
 void test10()
 {
+	// 10. Test description: Read pages after allocating pages for another file
+	// Allocating pages in a file...
+	for (i = 0; i < num/10; i++)
+	{
+		bufMgr->allocatePage(file1ptr, pid[i], page);
+		sprintf((char *)tmpbuf, "test.1 Page %d %7.1f", pid[i], (float)pid[i]);
+		rid[i] = page->insertRecord(tmpbuf);
+		bufMgr->unPinPage(file1ptr, pid[i], true);
+	}
+	// Reading pages back...
+	for (i = 0; i < num; i++)
+	{
+		bufMgr->readPage(file1ptr, pid[i], page);
+		sprintf((char *)&tmpbuf, "test.1 Page %d %7.1f", pid[i], (float)pid[i]);
+		if (strncmp(page->getRecord(rid[i]).c_str(), tmpbuf, strlen(tmpbuf)) != 0)
+		{
+			PRINT_ERROR("ERROR :: CONTENTS DID NOT MATCH");
+		}
+		bufMgr->unPinPage(file1ptr, pid[i], false);
+	}
+	std::cout << "Test 1 passed"
+			  << "\n";
 }
 
 void test11()
@@ -509,7 +515,8 @@ void test12()
 		rid[i] = page12->insertRecord(tmpbuf);
 		bufMgr->unPinPage(file12ptr, pid[i], true);
 	}
-	if (bufMgr->countDirtyPages() != 100)
+	// Checking if the dirty pages count is exactly equal to num
+	if (bufMgr->countDirtyPages() != num)
 	{
 		bufMgr->flushFile(file12ptr);
 		PRINT_ERROR("100 Pages should have been dirty.");
