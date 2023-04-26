@@ -477,31 +477,51 @@ void test9()
 void test10()
 {
 	// 10. Test description: Read pages after allocating pages for another file
-	// Allocating pages in a file...
-	for (i = 0; i < num/10; i++)
+	// Allocating pages in first file...
+	for (i = 0; i < num / 10; i++)
 	{
 		bufMgr->allocatePage(file1ptr, pid[i], page);
 		sprintf((char *)tmpbuf, "test.1 Page %d %7.1f", pid[i], (float)pid[i]);
 		rid[i] = page->insertRecord(tmpbuf);
 		bufMgr->unPinPage(file1ptr, pid[i], true);
 	}
-	// Reading pages back...
-	for (i = 0; i < num; i++)
+	// Reading pages from another file...
+	for (i = num / 10 + 1; i < num / 20; i++)
 	{
-		bufMgr->readPage(file1ptr, pid[i], page);
-		sprintf((char *)&tmpbuf, "test.1 Page %d %7.1f", pid[i], (float)pid[i]);
-		if (strncmp(page->getRecord(rid[i]).c_str(), tmpbuf, strlen(tmpbuf)) != 0)
+		bufMgr->allocatePage(file10ptr, pid[i], page10);
+		sprintf((char *)tmpbuf, "test.10 Page %d %7.1f", pid[i], (float)pid[i]);
+		rid[i] = page10->insertRecord(tmpbuf);
+		bufMgr->unPinPage(file10ptr, pid[i], true);
+
+		bufMgr->readPage(file10ptr, pid[i], page10);
+		sprintf((char *)&tmpbuf, "test.10 Page %d %7.1f", pid[i], (float)pid[i]);
+		if (strncmp(page10->getRecord(rid[i]).c_str(), tmpbuf, strlen(tmpbuf)) != 0)
 		{
 			PRINT_ERROR("ERROR :: CONTENTS DID NOT MATCH");
 		}
-		bufMgr->unPinPage(file1ptr, pid[i], false);
 	}
-	std::cout << "Test 1 passed"
+	std::cout << "Test 10 passed"
 			  << "\n";
 }
 
 void test11()
 {
+	// 4. Test description: Read file that is unpinned
+	// Allocating page in the file
+	bufMgr->allocatePage(file11ptr, pid[0], page);
+	sprintf((char *)tmpbuf, "test.11 Page %d %7.1f", pid[0], (float)pid[0]);
+	rid[0] = page->insertRecord(tmpbuf);
+	bufMgr->unPinPage(file11ptr, pid[0], true);
+	// Reading the page back
+	bufMgr->readPage(file11ptr, pid[0], page);
+	sprintf((char *)&tmpbuf, "test.11 Page %d %7.1f", pid[0], (float)pid[0]);
+	if (strncmp(page->getRecord(rid[0]).c_str(), tmpbuf, strlen(tmpbuf)) != 0)
+	{
+		PRINT_ERROR("ERROR :: CONTENTS DID NOT MATCH");
+	}
+	bufMgr->unPinPage(file11ptr, pid[0], false);
+	std::cout << "Test 11 passed"
+			  << "\n";
 }
 
 void test12()
